@@ -1,0 +1,268 @@
+!!!Frameworks JS en environnement Microsoft: état des lieux
+Tour d'horizon de quelques uns des frameworks front, et de leur intégration dans Visual Studio (et de quelques évolutions entre la version actuelle 2013 et la future version 2O15, actuellement en beta). 
+La présentation n'est cependant pas uniquement centrée sur Visual Studio, mais fait aussi un panorama synthétique de quelques technologies front.
+
+!!JQuery
+Ce framework universellement répandu prend en charge la compatibilité cross-browser, et fournit en outre une API de plus haut niveau que le JS natif (sélection d'éléments du DOM, requêtes AJAX).
+!!Bootstrap
+A l'origine c'est un framework CSS responsive-design (mobile-first). Il permet en particulier d'obtenir un layout grille à la fois bien aligné, et adapté aux dimensions de l'écran.
+
+!!KnockoutJS
+Ce framework JS n'est pas spécialement microsoftien (license MIT), mais semble être apprécié des programmeurs .NET. Ses points forts sont la simplicité et l'attention portée à la compatibilité entre versions. Il est moins général qu'Angular (pas de routing à ma connaissance, et ne permet donc pas de réaliser des "single page applications"), mais offre quand même des fonctionnalités de binding/refresh automatique/templating qui suffisent dans beaucoup de cas.
+
+!!AngularJS
+LE framework JS de ces dernières années. Ses point forts sont sa grande puissance, la familiarité des concepts pour les développeurs server-side (injection de dépendance, MVC), et le fait qu'il structure fortement le développement client-side. Son point faible est sa longue courbe d'apprentissage (certains concepts comme la transclusion ne sont pas évidents). Mais surtout, Google ne donne pas envie d'investir du temps dessus en annonçant qu'Angular2 serait incompatible et complètement différent (avis personnel).  
+
+!!Typescript
+Concurrent de coffeescript, c'est le javascript-like compilé de chez Microsoft ( il est néanmoins libre et gratuit, et rien n'oblige à l'utiliser avec .NET). 
+D'un point de vue langage, c'est un super-ensemble de ECMAScript6, ou du moins de ce que ses concepteurs pensent savoir de la future norme JS.
+Pour vérifier que les appels à des fonctions AngularJS/JQuery sont correctement typés, alors que ces frameworks ne connaissent pas Typescript, il utilise des plugins spécifiques à chaque framework, appelés "typings".
+
+!!Cordova
+Apache Cordova permet de convertir un site web HTML5 en application mobile native (multiplateformes), en encapsulant le site dans une WebView de taille 100%. Cordova permet aussi s'inclure du contenu spécifique à chaque plateforme.
+
+
+!!Support par Visual Studio
+____Ce support est-il présent dans la version Community? ____
+Visual Studio fournit un support de très bon niveau de support de ces frameworks front, illustré par la démo:
+* Génération automatique de la validation client-side pour un projet ASP.NET MVC
+* Gestionnaire de packages et dépendances avec Nuget(VS 2013) ou Bower(VS 2015)
+* IntelliSense. Ce terme MS désigne principalement l'autocomplétion. 
+Il permet par exemple l'autocomplétion sur les attributs de binding de KnockoutJS.
+Le bébé de Microsoft, Typescript, bénéficie évidemment d'une attention particulière et est embarqué dans VS par défaut. 
+
+!!!Introduction à C#6
+Ce n'est pas une version révolutionnaire mais plutôt un "project coin". 
+A noter que le nouveau compilateur C# (Roslyn) est lui aussi open-sourcé dans cette version.
+
+!!Améliorer le ratio signal/bruit:
+Ces nouveautés sont illustrées par la sorte de refactor la plus sympathique, celle qui qui n'utilise que le bouton DEL.
+!Auto-property initializer
+Cette nouvelle syntaxe permet d'inliner l'initialisation de la propriété, ce qui est un peu plus lisible que dans le constructeur:
+///[java]
+public bool MyProperty { get; set; } = false;
+///
+
+!Getter only auto-properties
+Permet de remplacer:
+///[java]
+public bool MyProperty { get; private set; }
+///
+qui est du code mort si le champ est read-only, par:
+///[java]
+public bool MyProperty { get; }
+///
+
+Ce changement peut être combiné au précédent pour une déclaration concise d'une propriété read-only:
+///[java]
+public bool MyProperty { get; } = false; 
+///
+
+Pour une propriété calculée, on peut l'initialiser avec le constructeur même si elle n'a pas de setter:
+///[java]
+public string Name { get; };
+public Customer(string first, string last)
+{
+    Name = first + " " + last;
+} 
+///
+
+!Imports statiques
+Jusqu'à présent, C# n'avait pas d'équivalent des static imports de Java, ce qui était un peu pénible en cas de répétition de System.Console.WriteLine() par exemple. 
+Une fonctionnalité analogue mais un peu moins complète est ajoutée en C#6: le using statique
+
+Avant:
+///[java]
+public void DoSomething()
+{
+  Console.WriteLine("Line 1");
+  Console.WriteLine("Line 2");
+  Console.WriteLine("Line 3");
+}
+///
+
+///[java]
+using System.Console;
+public void DoSomething()
+{
+  WriteLine("Line 1");
+  WriteLine("Line 2");
+  WriteLine("Line 3");
+}
+///
+Si vous vous demandez pourquoi le mot clef static n'apparaît pas, c'est parce que ceci ne fonctionne qu'avec une classe statique, comme Console. Contrairement à Java, une classe statique est une classe marquée comme telle et ne comprenant que des méthodes statiques. A noter qu'on importe toutes les méthodes de la classe statique.
+
+!Un litéral pour le "String interpolation"
+Un très sympathique syntactic sugar pour remplacer l'appel à string.Format, avec une syntaxe proche des expression languages utilisés par les fichiers de configuration:
+
+Avant:
+///[java]
+var name = "Dave";
+WriteLine(string.Format("My name is {0}", name));
+///
+
+Après:
+///[java]
+var name = "Dave";
+WriteLine($"My name is {name}");
+///
+
+!Expression-bodied methods and properties
+L'idée est de diminuer le bruit syntaxique en déclarant les méthodes et les auto-properties avec une expression lambda:
+
+Pour une méthode:
+///[java]
+public Point Move(int dx, int dy) => new Point(x + dx, y + dy);
+///
+
+Pour un opérateur overloadé:
+///[java]
+public static Complex operator +(Complex a, Complex b) => a.Add(b); 
+///
+
+Pour une  propriété:
+///[java]
+public string Name => First + " " + Last; 
+///
+
+Et même pour une  propriété indexée (indexer):
+///[java]
+public Customer this[long id] => store.LookupCustomer(id);
+///
+
+!Index initializers
+Un raccourci initialiser une propriété indexée:
+///[java]
+var numbers = new Dictionary<int, string> {
+    [7] = "seven",
+    [9] = "nine",
+    [13] = "thirteen"
+};
+///
+
+!Null conditional operators
+Les amateurs de Groovy reconnaîtront l'"Elvis operator", qui permet d'éviter les contrôles de nullité.
+
+Avant:
+///[java]
+string str="";
+if(records!=null && records[0]!=null && records[0].Person!=null)
+{
+    str= records[0].Person.Name;
+}
+///
+
+Après:
+///[java]
+string str=records?[0].Person?.Name;
+///
+
+Encore plus intéressant quand on le combine à l'opérateur (préexistant) ??
+///[java]
+string str=records?[0].Person?.Name??"n/a";
+///
+
+!!Autres nouveautés diverses:
+
+!L'opérateur nameof
+nameof permet de produire un String, à destination des APIs d'événements ou de reflexion, mais l'avantage est que le compilateur vérifie l'absence de typo, et qu'un refactor/rename changera le String produit. 
+Example d'une propriété qui produit un événement lors de sa mise à jour
+
+Avant:
+///[java]
+private ProductInformation _info;
+public ProductInformation Info 
+{
+    get { return _info; }    
+    set { _info = value; OnPropertyChanged("Info") }    
+}
+///
+
+Après:
+///[java]
+private ProductInformation _info;
+public ProductInformation Info 
+{
+    get { return _info; }    
+    set { _info = value; OnPropertyChanged(nameof(Info)) }    
+}
+///
+
+
+!Exception filters
+Si on compare les blocs catch d'un traitement d'exception aux blocs match d'un pattern matching Scala, les exceptions filters sont l'analogue des "guard clauses" (qui permettent d'ajouter une condition pour rentrer dans le bloc): en plus du contrôle structurel fait par catch/match sur l'Exception/case class, l'exception filter/guard clause ajoute un contrôle sur la valeur:
+///[java]
+try
+{
+// Accès BD
+}
+catch (DbException e) if (e.Code == 10999)
+{
+// Traitement particulier pour ce code d'erreur BD
+}
+///
+
+!Await in catch and finally
+Une restriction de async/await est levée: on peut désormais utiliser await dans un bloc catch ou finally. Un cas d'utilisation typique:
+///[java]
+public async Task SubmitDataToServer()
+{
+    try
+    {
+        // Submit Data
+    }
+    catch
+    {
+        await LogExceptionAsync();
+    }
+    finally
+    {
+        await CloseConnectionAsync();
+    }
+}
+///
+
+!!!TPL Dataflow: exemple de calcul de VAR
+!!TPL et Dataflow pour les programmeurs java
+TPL (Task Parallel Library) est le pendant .NET de l'Executor Framework Java. 
+TPL Dataflow est un sous-module plus récent de TPL, qui implémente un modèle de concurrence apparenté aux acteurs Erlang/Scala. 
+
+L'appelation Microsoft à rechercher sur MSDN est le pattern Actor/Agent. Cette variation du pattern Actor reprend le principe de la structuration d'une application en acteurs isolés (à un instant t un seul thread s'exécute dans l'acteur) communiquant par messages. 
+
+Mais, contrairement à Erlang, ces acteurs: 
+* Ne sont pas distribués 
+* Ne suivent pas suivant le principe "let it crash": ils ne sont pas relancés automatiquement en cas d'échec
+
+En effet, leur but est complètement différent:  il ne s'agit pas de réaliser une architecture distribuée et disponible, mais de proposer un modèle de programmation concurrente simplifié. Ce modèle consiste à représenter un algorithme par un graphe, dont les noeuds sont les étapes de l'algorithme. 
+
+Les noeuds du graphes sont appelés "blocks". Chaque block communique avec ses voisins par des messages "input data" et "output data":
+* Un noeud avec seulement des inputs est un "target block"
+* Un noeud avec seulement des outputs est un "source block"
+* Un noeud avec seulement des inputs et des outputs est un "propagator block"
+
+Le framework est extensible mais implémente des blocks standard, par exemple:
+* BroadcastBlock diffuse un message output data à plusieurs blocks
+* JoinBlock agrège la réception de messages input data provenant de plusieurs blocks
+* ...
+
+!!Exemple d'application au calcul de VAR
+Le code présenté est un exemple d'application au calcul de VAR par la méthode de Monte-Carlo. Le Value At Risk est en finance la pire perte possible pour un intervalle de confiance donné (par exemple, à 99%). Le calcul de VAR est extrêmement lourd en temps CPU (valeur typique selon l'intervenant: 5000 procs pendant une nuit). Il s'agit cependant d'un prototype d'illustration des concepts de TPL Dataflow, et en aucun cas de code production-ready. 
+
+Les blocks présents en grand nombre sont ceux qui effectuent chacun un calcul de pricing (pour une instance donnée du tirage de Monte Carlo). 
+Le pricing global dépend de tous ces calculs intermédiaires et doit donc attendre qu'ils aient tous terminé. 
+
+Pour ce faire, le code client appelle Dataflow.complete() __A VERIFIER__, qui a son tour appelle Task.wait() sur toutes les calculs intermédiaires. 
+Point important, si Task.wait() est bien sûr bloquant pour l'appelant, par contre aucun thread n'est bloqué: de même qu'en Java avec l'IO non bloquante ou les algorithmes concurrents utilisant CompletableFuture, le thread effectue une autre tâche pendant ce temps (en C#, cette "bascule" est implémentée au niveau langage par async/await). 
+
+!!Un modèle de concurrence simplifié basé: connecter un graphe de blocks
+En résumé, cette présentation présente un modèle de concurrence à mon sens intéressant, proche des acteurs Akka mais plus structurant de par la création explicite d'une graphe, et donc peut-être plus simple. Par contre ce modèle ne suit le pattern Actor que dans un sens restreint et ne permet par exemple pas une architecture distribuée. Le code est disponible sur Github ici: github/acensi/techdays-2015. 
+A noter, sur un thème lié, la parution récente du très bon ouvrage "Seven concurrency models in seven weeks" qui parle (entre autres du pattern Actors).
+
+
+!!!Entity Framework 7
+Thème récurrent de ce salon, EF7 cible désormais d'autres OS (en particulier ios et Linux), et de nouvelles sources de données (SQLite, Azure table storage, Redis, PostgreSQL, BD in memory pour les tests). 
+Il ne s'agit cependant pas d'une "abstraction magique" selon les termes de l'orateur, et contrairement à la philosophie EE, certaines actions sont possibles ou non suivant le provider. 
+
+Dans les changements techniques, la génération de SQL a été améliorée: insert batchés, requêtes paramétriques. La génération du __mapping__ est désormais uniquement faite à partir du code, un des buts de cette version étant la simplification. 
+
+A noter une confusion courante à ce sujet, "Code First" ne signifie pas que l'on génère la BD à partir des entités.

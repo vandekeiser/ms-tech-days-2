@@ -1,0 +1,93 @@
+!!!Sécurité, cloud, et données privées
+Cette présentation est en deux parties: les questions générales, puis le positionnement Azure
+
+!!Axes d'analyse des risques
+
+Commençons par une classification des différents types de Cloud, basée sur là où s'arrête la responsabilité du fournisseur:
+*IaaS: après la couche virtualisation
+*PaaS: après la couche middleware
+*SaaS: tout, y compris les applications
+
+Les principaux risques du passage au Cloud sont:
+*sécurité
+*protection des données
+*conformité légale/réglementaire (compliance)
+
+Les risques encourus par les données sont évidemment différents selon qu'elles soient publiques, internes, ou confidentielles.
+
+!!Le positionnement Azure
+
+MS se positionnent comme vendeurs de tous les types de cloud: public, privé, hybride.
+Comment entendent-ils se différencier? Leur argumentaire est fondé sur les éléments suivants:
+
+!Conformité aux standards 
+Et en particulier ISO 27018. J'avoue ne pas être à même de juger de la pertinence de cet argument. 
+Certains standards ne prouvent pas grand-chose sur la qualité du service fourni par les entreprises (par exemple ISO 9001 est souvent un argument commercial alors qu'il concerne la gestion interne de l'entrprise). 
+
+D'un autre côté Azure est de toute façon de bonne facture technique. 
+Mais on peut quand même avoir des surprises, par example le SqlServer Azure a des limitations qui font échouer des scripts d'import fonctionnant sur SqlServer natif. 
+Dans l'ensemble Azure est une offre très compétente techniquement, pas d'inquiètude à ce sujet. Attention quand même à bien comprendre les implications du SLA (calculer l'indisponibiité consécutive maximale admise, et imaginer qu'elle se produise pendant la période d'activité maximale - Noël par exemple pour du e-commerce), car à moins d'être un VIP, le SLA peut être à double tranchant. 
+
+!Transparence
+On peut par exemple savoir précisément où sont hébergées nos données. 
+D'autre part MS s'affiche comme simple sous-traitant des traitements, et promet par exemple à ce titre de ne pas utiliser les données à ses fins propres.
+
+Enfin, l'intervenant aborde spontanément LA question à laquelle tout le monde pense: quid du fait que le gouvernement américain prétend désormais accéder aux données hébergées par des entreprises US, même si elles sont stockées en Europe, sans avoir à passer par les voies normales de la coopération internationale? 
+
+MS a récemment refusé de transmettre les données demandées par un juge de New York, et plus généralement les entreprises américaines s'inquiètent de la perte de confiance provoquée par ces exigences. La procédure judiciaire est encore en cours (mon pifomètre: MS va gagner).
+
+Par contre, la louable résistance de MS concerne une demande provenant du circuit judiciaire normal (et donc publique..). Qu'en est-il des demandes provenant des procédures d'exception, qui elles restent secrètes? (FISA court, national security letters, révélations Snowden).
+
+Sur ce sujet, autant l'entreprise française lambda peut à mon avis utiliser Azure sans paranoïa, autant il n'est (par exemple) pas envisageable qu'une entreprise du secteur de la défense en fasse de même. Une entreprise en compétition avec une entreprise US ne devrait-elle pas se méfier? Ou se situe la frontière? 
+
+
+!!!Makers + IOT : une nouvelle révolution industrielle?
+"Software is eating the world", autrement dit le soft s'insinue partout aussi irrésistiblement que l'eau.
+D'un autre côté, les programmeurs fabriquent de plus en plus d'objets physiques.
+Ce double mouvement va-t-il conduire à des changements profonds, et dans quel sens?
+
+!!Le mouvement des Makers
+Le premier orateur est l'organisateur de Makers Faire France. 
+Le terme "makers" désigne la fabrication à petite échelle, par des individus ou des petits groupes.
+Si ce mouvement est en train d'exploser, c'est grâce à la démocratisation de quelques technologies clef depuis quelques années:
+
+!!Les technologies clefs
+
+!L'impression 3D 
+Elle permet de produire des objets en plastique sans avoir besoin d'un moule, qui est très coûteux.
+Cela rend possible la fabrication de faibles volumes, impossible à amortir sinon. 
+
+!Les cartes de prototypage
+Les Arduino et RaspberryPi sont bien connues des programmeurs. 
+Leur petit prix et leur faible encombrement permet de les embarquer dans des objets physiques de petite taille.
+
+!La combinaison des deux
+Parmis ces utilisations on peut citer la domotique et la robotique. 
+Un des meilleurs examples est le Français Gaël Langevin et son robot InMoov (http://www.inmoov.fr/project/),
+fabriqué par impression 3D et contrôlé par un simple Arduino. 
+Nicolas Huchet, amputé d'un bras, a désormais un bras bionique low-cost fabriqué avec cette technologie:
+http://bionico.org/inde-techfest-bombay-2-3-4-janvier-2015/
+
+!!Les lieux
+Traditionnellement, les Fab labs sont des lieux communautaires mis à disposition gratuitement (mais forcément avec les contraintes de partage associées).
+Ils peuvent être d'associations, d'universités, d'entreprises, ..
+
+Un autre type de lieux, payant celui-là, existe désormais: les Tech shops, dont parle le deuxième intervenant. 
+Il peut s'avérer par exemple plus adéquat pour une entreprise ne souhaitant pas partager le fruit de son travail.
+
+
+!!Les places de marché
+A part les salons, les places de marché sont surtout sur internet. Evidemment les makers qui n'ont pas les moyens d'investir dans un moule de production plastique peuvent encore moins avoir une boutique physique. Quelques exemple montrent que ce marché existe également: 
+de.dawanda.com
+www.etsy.com
+www.alittlemarket.com
+ebay..
+amazon                                              
+
+!!!Analyser sa maison à l'aide de Apache Storm: Big data en temps réel
+
+
+!!!Applications multiplateformes avec Cordova, HTML 5, et JS
+Historiquement, les applications multiplateformes multi
+
+Pour ceux qui n'ont pas pratiqué Cordova, la démo illustrait assez bien la facilité d'utilisation de cette 

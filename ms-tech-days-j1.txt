@@ -1,0 +1,83 @@
+------------------------Frameworks JS en environnement Microsoft: état des lieux------------------------ 
+Tour d'horizon de quelques uns des frameworks front, et de leur intégration dans Visual Studio (et de quelques évolutions entre la version actuelle 2013 et la future version 2O15, actuellement en beta). 
+La présentation n'est cependant pas uniquement centrée sur Visual Studio, mais fait aussi un panorama synthétique de quelques technologies front.
+----JQuery
+	Ce framework universellement répandu prend en charge la compatibilité cross-browser, et fournit en outre une API de plus haut niveau que le JS natif (sélection d'éléments du DOM, requêtes AJAX).
+----Bootstrap
+	A l'origine c'est un framework CSS responsive-design (mobile-first). Il permet en particulier d'obtenir un layout grille à la fois bien aligné, et adapté aux dimensions de l'écran.
+----KnockoutJS
+	Ce framework JS n'est pas spécialement microsoftien (license MIT), mais semble être apprécié des programmeurs .NET. Ses points forts sont la simplicité et l'attention portée à la compatibilité entre versions. Il est moins général qu'Angular (pas de routing à ma connaissance, et ne permet donc pas de réaliser des "single page applications"), mais offre quand même des fonctionnalités de binding/refresh automatique/templating qui suffisent dans beaucoup de cas.
+----AngularJS
+	LE framework JS de ces dernières années. Ses point forts sont sa grande puissance, la familiarité des concepts pour les développeurs server-side (injection de dépendance, MVC), et le fait qu'il structure fortement le développement client-side. Son point faible est sa longue courbe d'apprentissage (certains concepts comme la transclusion ne sont pas évidents). Mais surtout, Google ne donne pas envie d'investir du temps dessus en annonçant qu'Angular2 serait incompatible et complètement différent (avis personnel).  
+----Typescript
+	Concurrent de coffeescript, c'est le javascript-like compilé de chez Microsoft ( il est néanmoins libre et gratuit, et rien n'oblige à l'utiliser avec .NET). 
+	D'un point de vue langage, c'est un super-ensemble de ECMAScript6, ou du moins de ce que ses concepteurs pensent savoir de la future norme JS.
+	Pour vérifier que les appels à des fonctions AngularJS/JQuery sont correctement typés, alors que ces frameworks ne connaissent pas Typescript, il utilise des plugins spécifiques à chaque framework, appelés "typings".
+----Cordova
+	Apache Cordova permet de convertir un site web HTML5 en application mobile native (multiplateformes), en encapsulant le site dans une WebView de taille 100%. Cordova permet aussi s'inclure du contenu spécifique à chaque plateforme.
+----Support par Visual Studio
+Visual Studio fournit un support de très bon niveau de ces frameworks front:
+????Ce support est-il présent dans la version Community????
+-Génération automatique de la validation client-side pour un projet ASP.NET MVC
+-Gestionnaire de packages et dépendances avec Nuget(VS 2013) ou Bower(VS 2015)
+-IntelliSense. Ce terme MS désigne principalement l'autocomplétion. 
+Il permet par exemple l'autocomplétion sur les attributs de binding de KnockoutJS.
+Le bébé de Microsoft, Typescript, bénéficie évidemment d'une attention particulière et est embarqué dans VS par défaut. 
+
+------------------------Introduction à C#6------------------------ 
+Ce n'est pas une version révolutionnaire mais plutôt un "project coin". A noter que le nouveau compilateur C# (Roslyn) est lui aussi open-sourcé dans cette version.
+
+Améliorer le ratio signal/bruit:
+!!!!FORCEMENT, INCLURE CODE SNIPPETS!!!!
+-Getter-only auto props
+-Imports statiques
+-Un litéral pour le "String interpolation"
+-Expression-bodied methods and properties
+-Index initializers
+-Null conditional operators
+
+Nouveautés diverses:
+-L'opérateur nameof
+-Exception filters
+-Await in catch and finally
+
+------------------------TPL Dataflow: exemple de calcul de VAR-----------------------
+TPL (Task Parallel Library) est le pendant .NET de l'Executor Framework Java. 
+TPL Dataflow est un sous-module plus récent de TPL, qui implémente un modèle de concurrence apparenté aux acteurs Erlang/Scala. 
+
+L'appelation Microsoft à rechercher sur MSDN est le pattern Actor/Agent. Cette variation du pattern Actor reprend le principe de la structuration d'une application en acteurs isolés (à un instant t un seul thread s'exécute dans l'acteur) communiquant par messages. 
+
+Mais, contrairement à Erlang, ces acteurs: 
+-Ne sont pas distribués 
+-Ne suivent pas suivant le principe "let it crash": ils ne sont pas relancés automatiquement en cas d'échec
+
+En effet, leur but est complètement différent:  il ne s'agit pas de réaliser une architecture distribuée et disponible, mais de proposer un modèle de programmation concurrente simplifié. Ce modèle consiste à représenter un algorithme par un graphe, dont les noeuds sont les étapes de l'algorithme. 
+
+Les noeuds du graphes sont appelés "blocks". Chaque block communique avec ses voisins par des messages "input data" et "output data":
+-Un noeud avec seulement des inputs est un "target block"
+-Un noeud avec seulement des outputs est un "source block"
+-Un noeud avec seulement des inputs et des outputs est un "propagator block"
+Le framework est extensible mais implémente des blocks standard, par exemple:
+-BroadcastBlock diffuse un message output data à plusieurs blocks
+-JoinBlock agrège la réception de messages input data provenant de plusieurs blocks
+-...
+
+Le code présenté est un exemple d'application au calcul de VAR par la méthode de Monte-Carlo. Le Value At Risk est en finance la pire perte possible pour un intervalle de confiance donné (par exemple, à 99%). Le calcul de VAR est extrêmement lourd en temps CPU (valeur typique selon l'intervenant: 5000 procs pendant une nuit). Il s'agit cependant d'un prototype d'illustration des concepts de TPL Dataflow, et en aucun cas de code production-ready. 
+
+Les blocks présents en grand nombre sont ceux qui effectuent chacun un calcul de pricing (pour une instance donnée du tirage de Monte Carlo). 
+Le pricing global dépend de tous ces calculs intermédiaires et doit donc attendre qu'ils aient tous terminé. 
+
+Pour ce faire, le code client appelle Dataflow.complete() __A VERIFIER__, qui a son tour appelle Task.wait() sur toutes les calculs intermédiaires. 
+Point important, si Task.wait() est bien sûr bloquant pour l'appelant, par contre aucun thread n'est bloqué: de même qu'en Java avec l'IO non bloquante ou les algorithmes concurrents utilisant CompletableFuture, le thread effectue une autre tâche pendant ce temps (en C#, cette "bascule" est implémentée au niveau langage par async/await). 
+
+En résumé, cette présentation présente un modèle de concurrence à mon sens intéressant, proche des acteurs Akka mais plus structurant de par la création explicite d'une graphe, et donc peut-être plus simple. Par contre ce modèle ne suit le pattern Actor que dans un sens restreint et ne permet par exemple pas une architecture distribuée. Le code est disponible sur Github ici: github/acensi/techdays-2015. 
+A noter, sur un thème lié, la parution récente du très bon ouvrage "Seven concurrency models in seven weeks" qui parle (entre autres du pattern Actors).
+
+
+------------------------Entity Framework 7------------------------ 
+Thème récurrent de ce salon, EF7 cible désormais d'autres OS (en particulier ios et Linux), et de nouvelles sources de données (SQLite, Azure table storage, Redis, PostgreSQL, BD in memory pour les tests). 
+Il ne s'agit cependant pas d'une "abstraction magique" selon les termes de l'orateur, et contrairement à la philosophie EE, certaines actions sont possibles ou non suivant le provider. 
+
+Dans les changements techniques, la génération de SQL a été améliorée: insert batchés, requêtes paramétriques. La génération du __mapping__ est désormais uniquement faite à partir du code, un des buts de cette version étant la simplification. 
+
+A noter une confusion courante à ce sujet, "Code First" ne signifie pas que l'on génère la BD à partir des entités.
