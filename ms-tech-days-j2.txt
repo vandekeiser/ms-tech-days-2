@@ -85,9 +85,32 @@ ebay..
 amazon                                              
 
 !!!Analyser sa maison à l'aide de Apache Storm: Big data en temps réel
+Certains domaines métier nécessitent une analyse big data en temps réel:
+-gestion des stocks
+-détection de fraudes
+-gestion des bouchons
+-..
 
+Les technologies mises en oeuvres sont proches quelque soit le domaine, cette présentation prend un exemple volontairement simpliste de suivi d'indicateurs domotiques pour les illustrer.
 
 !!!Applications multiplateformes avec Cordova, HTML 5, et JS
-Historiquement, les applications multiplateformes multi
+Cordova est l'ex PhoneGap, donné à la fondation Apache. 
+Il va plus loin que ce dernier avec une interface CLI assez simple, illustrée par la demo:
+-cordova create <projet>
+-cordova platform add android
+-cordova platform add browser
+-cordova run browser
+-..
 
-Pour ceux qui n'ont pas pratiqué Cordova, la démo illustrait assez bien la facilité d'utilisation de cette 
+Cordova utilise WebView sur android et ios, mais est supporté nativement sur windows phone.
+
+Les fonctionnalités spécifiques au mobile nécessite l'installation d'un plugin.
+Sans IDE, l'installation d'un plugin se fait en recherchant le plugin sur internet puis en utilisant la CLI:
+cordova plugin add org.apache.cordova.camera
+
+Visual Studio a un bon support de Cordova:
+-installe tout (le SDK android, java, ..)
+-pas besoin de chercher le nom des plugins sur internet
+-fournit un émulateur android
+-debug à partir d'un seul outil (mais sur ios, nécessite l'installation de vs-mda-remote)
+-tout cela intégré avec l'utilisation de Typescript
