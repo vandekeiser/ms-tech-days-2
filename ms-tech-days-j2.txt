@@ -75,7 +75,6 @@ Ils peuvent être d'associations, d'universités, d'entreprises, ..
 Un autre type de lieux, payant celui-là, existe désormais: les Tech shops, dont parle le deuxième intervenant. 
 Il peut s'avérer par exemple plus adéquat pour une entreprise ne souhaitant pas partager le fruit de son travail.
 
-
 !!Les places de marché
 A part les salons, les places de marché sont surtout sur internet. Evidemment les makers qui n'ont pas les moyens d'investir dans un moule de production plastique peuvent encore moins avoir une boutique physique. Quelques exemple montrent que ce marché existe également: 
 de.dawanda.com
@@ -90,8 +89,32 @@ Certains domaines métier nécessitent une analyse big data en temps réel:
 -détection de fraudes
 -gestion des bouchons
 -..
-
 Les technologies mises en oeuvres sont proches quelque soit le domaine, cette présentation prend un exemple volontairement simpliste de suivi d'indicateurs domotiques pour les illustrer.
+
+Cette présentation a battu le record du nombre de technologies au mètre carré, je ne peux donc pas tout détailler, mais je vais essayer de reprendre les idées les plus intéressantes.
+
+!!Le matériel
+Le capteur de température/hygrométrie est un Enocean, car cette marque a l'avantage d'être sans fil, sans pile, et d'être bien documentée.
+Il envoie à intervalle régulier ces informations à un Raspberry Pi local.
+Pour chaque maison, on aurait donc un capteur Enocean + un Raspberry.
+
+!!La transmission des données au monde extérieur
+Le prototype initial était un serveur web central, mais cette architecture n'est pas scalable et ne protège pas contre la perte d'informations (ne serait-ce qu'en ca de reboot du serveur).
+La solution qu'ils ont adopté est de le remplacer par une queue Azure Event Hub, qui fait de la rétention et peut recevoir jusqu'à 10^6 événements par seconde.
+Le rasp contient alors une appi Node.js qui fait le lien entre le capteur et le monde extérieur:
+-
+
+!!Lambda architecture
+Cette architecture consiste en gros à réaliser à la fois un traitement en temps réel et un archivage des données moyennées.
+Ici le terme lambda n'a rien à voir avec les lambdas de la programmation fonctionnelle, mais évoque plutôt le double aiguillage des données d'entrée.
+
+Ici cette topologie en lambda est implémentée avec Apache Storm.
+
+Les primitives fournies par Storm sont: 
+-les Spouts: sources de données, ici la queue Azure Event Hub (contenant les messages JSON envoyés par le Raspberry)
+-les Bolts: noeuds de traitement temps réel
+Elle est configurée par une simple classe Java.
+__CODE GITHUB???_
 
 !!!Applications multiplateformes avec Cordova, HTML 5, et JS
 Cordova est l'ex PhoneGap, donné à la fondation Apache. 
